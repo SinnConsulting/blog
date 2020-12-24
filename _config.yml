@@ -6,13 +6,13 @@
 name: Reverie
 
 # Name of the author
-author: Amit Merchant
+author: Marcel Sinn
 
 # Short bio or description (displayed in the header)
-description: An elegant Jekyll theme
+description: “Tell me and I forget. Teach me and I remember. Involve me and I learn. ~ Benjamin Franklin"
 
 # URL of your avatar or profile pic (you could use your GitHub profile pic)
-avatar: "https://sinn.consulting/images/Originalx600_1x1.png"
+avatar: "https://github.com/SinnConsulting/web-presence/blob/master/images/Originalx600_1x1.png"
 
 #
 # Flags below are optional

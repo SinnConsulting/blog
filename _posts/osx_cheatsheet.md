@@ -4,22 +4,22 @@ title: OSX Cheatsheet
 categories: [osx, cheatsheet]
 ---
 
-# OSX Cheatsheet
+## OSX Cheatsheet
 
-## OSX Update
+### OSX Update
 
 ```shell
 sudo softwareupdate -i -a
 ```
 
-## AppStore Install & Update
+### AppStore Install & Update
 
 ```shell
 mas install "1295203466" # Remote Desktop Client
 mas upgrade
 ```
 
-## TimeMachine
+### TimeMachine
 
 ```shell
 tmutil startbackup

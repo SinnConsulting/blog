@@ -1,7 +1,6 @@
 ---
-layout: page
+layout: post
 title: OSX Cheatsheet
-permalink: /osx-cheatsheet/
 categories: [osx, cheatsheet]
 ---
 

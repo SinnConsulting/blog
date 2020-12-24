@@ -1,6 +1,6 @@
 ---
 layout: post
-title: DRAFT: OSX Top 10 Tools
+title: "DRAFT: OSX Top 10 Tools"
 categories: [osx, tools]
 ---
 

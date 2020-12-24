@@ -19,3 +19,10 @@ Website: <https://rectangleapp.com>
 Website: <https://keepingyouawake.app>
 
 > Prevents your Mac from going to sleep
+
+## Muzzle
+<img src="https://muzzleapp.com/favicons/apple-touch-icon.png" alt="Muzzle" width="100">
+
+Website: <https://muzzleapp.com>
+
+> a simple mac app to silence embarrassing notificatins while screensharing

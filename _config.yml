@@ -3,13 +3,13 @@
 #
 
 # Name of your site (displayed in the header)
-name: "MSC | Blog"
+name: "Sinn Consulting"
 
 # Name of the author
 author: Marcel Sinn
 
 # Short bio or description (displayed in the header)
-description: “Tell me and I forget. Teach me and I remember. Involve me and I learn. ~ Benjamin Franklin"
+description: "🚀 Technology, IT-Systems, Architecture, DevOPS, Linux, OSX and many more - can be found here ... 🚀 "
 
 # URL of your avatar or profile pic (you could use your GitHub profile pic)
 avatar: "https://github.com/SinnConsulting/web-presence/blob/master/images/Originalx600_1x1.png?raw=true"
@@ -30,7 +30,7 @@ footer-links:
   pinterest:
   rss:
   twitter:
-  stackoverflow:
+  stackoverflow: ArgonQQ
   youtube: # channel/<your_long_string> or user/<user-name>
   playconsole:
 

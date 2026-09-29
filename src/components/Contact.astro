@@ -1,0 +1,7 @@
+---
+import { operator as o } from '../data/legal';
+interface Props { kind: 'address' | 'mail' }
+const { kind } = Astro.props;
+---
+{kind === 'address' && <span class="obf-addr" data-a={o.street} data-c={o.city}></span>}
+{kind === 'mail' && <a class="obf-mail" href="#" data-u={o.mail.user} data-d={o.mail.domain}></a>}

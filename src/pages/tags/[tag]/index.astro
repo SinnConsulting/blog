@@ -1,0 +1,33 @@
+---
+import Base from '../../../layouts/Base.astro';
+import RepoHead from '../../../components/RepoHead.astro';
+import Profile from '../../../components/Profile.astro';
+import Pinned from '../../../components/Pinned.astro';
+import Sponsor from '../../../components/Sponsor.astro';
+import AgentBox from '../../../components/AgentBox.astro';
+import Icon from '../../../components/Icon.astro';
+import { url } from '../../../lib/paths';
+import { getPosts, allTags, formatDate, type Post } from '../../../lib/posts';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return allTags(posts).map(([tag]) => ({ params: { tag }, props: { tag, tagged: posts.filter((p) => p.data.tags.includes(tag)) } }));
+}
+interface Props { tag: string; tagged: Post[] }
+const { tag, tagged } = Astro.props;
+---
+<Base title={`Topic: ${tag}`} description={`Posts about ${tag}.`} crumbs={[{ label: 'topics', href: url('tags/') }, { label: tag }]}>
+  <RepoHead slot="head" active="tags" />
+  <Fragment slot="left"><Profile /><Pinned /><Sponsor /></Fragment>
+  <div class="box files">
+    <div class="box-header"><Icon name="tag" /> <strong>{tag}</strong><span class="muted">· {tagged.length} {tagged.length === 1 ? 'post' : 'posts'}</span></div>
+    {tagged.map((p) => (
+      <div class="box-row">
+        <span class="name"><span class="icon"><Icon name="file" /></span><a class="file" href={url(`${p.id}/`)}>{p.id}.md</a></span>
+        <span class="summary">{p.data.summary}</span>
+        <time datetime={p.data.date.toISOString()}>{formatDate(p.data.date)}</time>
+      </div>
+    ))}
+  </div>
+  <Fragment slot="right"><AgentBox /></Fragment>
+</Base>

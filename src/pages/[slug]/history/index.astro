@@ -1,0 +1,74 @@
+---
+import Base from '../../../layouts/Base.astro';
+import Pinned from '../../../components/Pinned.astro';
+import Sponsor from '../../../components/Sponsor.astro';
+import Contributors from '../../../components/Contributors.astro';
+import AgentBox from '../../../components/AgentBox.astro';
+import FileNav from '../../../components/FileNav.astro';
+import Icon from '../../../components/Icon.astro';
+import { url, github, avatarFor } from '../../../lib/paths';
+import { getPosts, history, sourcePath, formatDate, type Post } from '../../../lib/posts';
+
+export async function getStaticPaths() {
+  return (await getPosts()).map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+interface Props { post: Post }
+const { post } = Astro.props;
+const log = history(post);
+const days = new Map<string, typeof log>();
+for (const c of log) {
+  const k = formatDate(c.date);
+  days.set(k, [...(days.get(k) ?? []), c]);
+}
+---
+<Base
+  title={`History for ${post.id}.md`}
+  description={`Every edit to “${post.data.title}”, as git commits.`}
+  crumbs={[{ label: 'posts', href: url('/') }, { label: `${post.id}.md`, href: url(`${post.id}/`) }, { label: 'history' }]}
+  noindex
+>
+  <Fragment slot="left">
+    <Pinned />
+    <Sponsor />
+  </Fragment>
+
+  <header class="post-head">
+    <FileNav post={post} active="history" />
+    <h1 style="font-size:24px">Commits on {post.id}.md</h1>
+    <p class="dek">Every change to this post is a git commit. Nothing is edited silently.</p>
+  </header>
+
+  {log.length === 0 ? (
+    <div class="box empty">No history available in this build. <a href={github.commits(sourcePath(post))}>View it on GitHub</a>.</div>
+  ) : (
+    <div class="timeline">
+      {[...days].map(([day, commits]) => (
+        <>
+          <h3>Commits on {day}</h3>
+          <div class="box">
+            {commits.map((c) => (
+              <div class="box-row commit" style="padding:12px 16px">
+                <img class="avatar" src={avatarFor(c.author)} width="32" height="32" alt="" loading="lazy" />
+                <div style="flex:1;min-width:0">
+                  <a class="subject" href={github.commit(c.sha)}>{c.subject}</a>
+                  <div class="muted" style="font-size:12px"><strong style="color:var(--fg)">{c.author}</strong> committed {formatDate(c.date)}</div>
+                </div>
+                <a class="btn sha" href={github.commit(c.sha)}>{c.short}</a>
+              </div>
+            ))}
+          </div>
+        </>
+      ))}
+    </div>
+  )}
+
+  <Fragment slot="right">
+    <section class="side">
+      <h2>{post.data.title}</h2>
+      <p class="muted">{post.data.summary}</p>
+      <p><a class="btn" href={url(`${post.id}/`)}><Icon name="eye" /> Read the post</a></p>
+    </section>
+    <Contributors ids={post.data.authors} />
+    <AgentBox markdown={url(`${post.id}.md`)} />
+  </Fragment>
+</Base>

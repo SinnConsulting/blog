@@ -1,0 +1,14 @@
+---
+import Base from '../layouts/Base.astro';
+import Pinned from '../components/Pinned.astro';
+import { url } from '../lib/paths';
+---
+<Base title="404" noindex>
+  <Fragment slot="left"><Pinned /></Fragment>
+  <div class="box" style="text-align:center;padding:48px 16px">
+    <p class="mono" style="font-size:64px;margin:0;font-weight:600">404</p>
+    <p style="font-size:18px">This is not the post you're looking for.</p>
+    <p class="muted">Maybe it moved, or it's still on a draft branch.</p>
+    <p><a class="btn" href={url('/')}>Back to all posts</a> <a class="btn" href={url('llms.txt')}>Browse llms.txt</a></p>
+  </div>
+</Base>

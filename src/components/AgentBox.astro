@@ -1,0 +1,20 @@
+---
+import Icon from './Icon.astro';
+import { url } from '../lib/paths';
+interface Props { markdown?: string; tokens?: number }
+const { markdown, tokens } = Astro.props;
+const rows = [
+  ...(markdown ? [{ label: 'this post (.md)', href: markdown }] : []),
+  { label: 'llms.txt', href: url('llms.txt') },
+  { label: 'llms-full.txt', href: url('llms-full.txt') },
+  { label: 'posts.json', href: url('posts.json') },
+  { label: 'rss.xml', href: url('rss.xml') },
+];
+---
+<section class="side">
+  <h2><Icon name="hubot" /> For agents</h2>
+  <p class="muted" style="font-size:12px">Plain endpoints, no JavaScript, no scraping needed.{tokens ? ` This post is ≈${tokens.toLocaleString('en-US')} tokens.` : ''}</p>
+  <ul class="endpoints">
+    {rows.map((r) => <li><a href={r.href}>{r.label}</a><span class="muted">GET</span></li>)}
+  </ul>
+</section>

@@ -1,0 +1,35 @@
+---
+import Icon from './Icon.astro';
+import { site } from '../data/site';
+import { url, github } from '../lib/paths';
+import { getPosts, allTags } from '../lib/posts';
+
+interface Props { active: 'posts' | 'tags' | 'agents' }
+const { active } = Astro.props;
+const posts = await getPosts();
+const tabs = [
+  { id: 'posts', label: 'Posts', icon: 'book', href: url('/'), count: posts.length },
+  { id: 'tags', label: 'Topics', icon: 'tag', href: url('tags/'), count: allTags(posts).length },
+  { id: 'agents', label: 'For agents', icon: 'hubot', href: url('agents/') },
+];
+---
+<div class="repo-head">
+  <div class="inner">
+    <div class="repo-title">
+      <h1><Icon name="repo" /> <a href={url('/')}>{site.owner}</a> / <strong><a href={url('/')}>{site.name}</a></strong></h1>
+      <span class="label agent">Agent-readable</span>
+      <div class="repo-actions">
+        <a class="btn" href={url('rss.xml')}><Icon name="rss" /> Subscribe</a>
+        <a class="btn" href={github.repo}><Icon name="code" /> View source</a>
+        <a class="btn" href={github.repo}><Icon name="star" /> Star on GitHub</a>
+      </div>
+    </div>
+    <nav class="tabs" aria-label="Sections">
+      {tabs.map((t) => (
+        <a href={t.href} aria-current={t.id === active ? 'page' : undefined}>
+          <Icon name={t.icon} /> {t.label} {t.count !== undefined && <span class="count">{t.count}</span>}
+        </a>
+      ))}
+    </nav>
+  </div>
+</div>

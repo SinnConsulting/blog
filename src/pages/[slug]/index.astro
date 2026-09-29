@@ -1,0 +1,152 @@
+---
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Pinned from '../../components/Pinned.astro';
+import Sponsor from '../../components/Sponsor.astro';
+import Contributors from '../../components/Contributors.astro';
+import AgentBox from '../../components/AgentBox.astro';
+import FileNav from '../../components/FileNav.astro';
+import Icon from '../../components/Icon.astro';
+import { authors } from '../../data/site';
+import { url, absolute } from '../../lib/paths';
+import { getPosts, history, lastUpdated, readingTime, lines, tokens, formatDate, type Post } from '../../lib/posts';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post, posts } }));
+}
+interface Props { post: Post; posts: Post[] }
+const { post, posts } = Astro.props;
+const { Content, headings } = await render(post);
+const d = post.data;
+const log = history(post);
+const latest = log[0];
+const toc = headings.filter((h) => h.depth === 2);
+const mdUrl = url(`${post.id}.md`);
+const canonical = absolute(`${post.id}/`);
+const related = posts
+  .filter((p) => p.id !== post.id)
+  .map((p) => ({ p, score: p.data.tags.filter((t) => d.tags.includes(t)).length }))
+  .sort((a, b) => b.score - a.score || b.p.data.date.valueOf() - a.p.data.date.valueOf())
+  .slice(0, 4)
+  .map((x) => x.p);
+const askClaude = `https://claude.ai/new?q=${encodeURIComponent(`Read ${absolute(`${post.id}.md`)} and help me apply it to my own setup. Start with a 3-bullet summary.`)}`;
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: d.title,
+  description: d.summary,
+  datePublished: d.date.toISOString(),
+  dateModified: lastUpdated(post).toISOString(),
+  keywords: d.tags.join(', '),
+  url: canonical,
+  mainEntityOfPage: canonical,
+  wordCount: (post.body ?? '').split(/\s+/).length,
+  author: d.authors.map((a) => ({ '@type': authors[a]?.kind === 'agent' ? 'SoftwareApplication' : 'Person', name: authors[a]?.name ?? a, url: authors[a]?.href })),
+  encoding: { '@type': 'MediaObject', encodingFormat: 'text/markdown', contentUrl: absolute(`${post.id}.md`) },
+};
+---
+<Base
+  title={d.title}
+  description={d.summary}
+  type="article"
+  markdownAlt={absolute(`${post.id}.md`)}
+  jsonLd={jsonLd}
+  crumbs={[{ label: 'posts', href: url('/') }, { label: `${post.id}.md` }]}
+  noindex={d.status === 'draft'}
+>
+  <Fragment slot="left">
+    {toc.length > 0 && (
+      <section class="side">
+        <h2>On this page</h2>
+        <ul class="toc" id="toc">
+          {toc.map((h) => <li><a href={`#${h.slug}`}>{h.text}</a></li>)}
+        </ul>
+      </section>
+    )}
+    <Pinned />
+    <Sponsor />
+  </Fragment>
+
+  <header class="post-head">
+    <FileNav post={post} active="preview" />
+    <h1>{d.title}</h1>
+    <p class="dek">{d.summary}</p>
+  </header>
+
+  <div class="box" style="margin-bottom:16px">
+    <div class="box-header commit-bar">
+      <span class="avatar-stack">
+        {d.authors.map((a) => <img class="avatar" src={authors[a]?.avatar.startsWith('http') ? authors[a].avatar : url(authors[a]?.avatar ?? 'favicon.svg')} width="20" height="20" alt={authors[a]?.name ?? a} title={authors[a]?.name ?? a} />)}
+      </span>
+      {latest ? (
+        <span class="msg"><strong>{latest.author}</strong>{latest.subject}</span>
+      ) : <span class="msg"><strong>{d.authors.map((a) => authors[a]?.name ?? a).join(' & ')}</strong>published</span>}
+      <span class="muted hide-sm">{formatDate(lastUpdated(post))}</span>
+      <a class="meta-line" href={url(`${post.id}/history/`)} style="color:var(--fg);font-weight:600"><Icon name="history" /> {Math.max(log.length, 1)} {log.length > 1 ? 'commits' : 'commit'}</a>
+    </div>
+  </div>
+
+  <article class="box">
+    <div class="file-toolbar">
+      <span class="stats">{lines(post)} lines · {readingTime(post)} min read · ≈{tokens(post).toLocaleString('en-US')} tokens</span>
+      <button class="btn" type="button" id="copy-md" data-src={mdUrl}><Icon name="copy" /> Copy as Markdown</button>
+      <a class="btn" href={askClaude} rel="noopener"><img src={url('claude.svg')} width="14" height="14" alt="" /> Ask Claude</a>
+    </div>
+    <div class="markdown" id="content">
+      <Content />
+    </div>
+  </article>
+
+  <Fragment slot="right">
+    <section class="side">
+      <h2>About</h2>
+      <p class="meta-line"><Icon name="book" /> Published {formatDate(d.date)}</p>
+      {d.audience && <p class="meta-line"><Icon name="eye" /> For {d.audience}</p>}
+      <div class="topics" style="margin-top:12px">
+        {d.tags.map((t) => <a class="topic" href={url(`tags/${t}/`)}>{t}</a>)}
+      </div>
+    </section>
+    {d.tldr.length > 0 && (
+      <section class="side">
+        <h2>TL;DR</h2>
+        <ul class="tldr">{d.tldr.map((t) => <li>{t}</li>)}</ul>
+      </section>
+    )}
+    <Contributors ids={d.authors} />
+    <AgentBox markdown={mdUrl} tokens={tokens(post)} />
+    {related.length > 0 && (
+      <section class="side">
+        <h2>More posts</h2>
+        <ul class="stack" style="list-style:none;margin:0;padding:0">
+          {related.map((p) => <li class="meta-line"><Icon name="file" /><a href={url(`${p.id}/`)} style="color:var(--fg)">{p.data.title}</a></li>)}
+        </ul>
+      </section>
+    )}
+  </Fragment>
+</Base>
+
+<script is:inline>
+  // Heading anchors
+  document.querySelectorAll('#content h2[id], #content h3[id]').forEach((h) => {
+    const a = document.createElement('a'); a.href = '#' + h.id; a.className = 'anchor'; a.textContent = '#'; a.setAttribute('aria-label', 'Link to this section');
+    h.prepend(a);
+  });
+  // Scroll-spy for "On this page"
+  const links = [...document.querySelectorAll('#toc a')];
+  if (links.length && 'IntersectionObserver' in window) {
+    const byId = new Map(links.map((a) => [decodeURIComponent(a.hash.slice(1)), a]));
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => { if (e.isIntersecting) { links.forEach((l) => l.classList.remove('active')); byId.get(e.target.id)?.classList.add('active'); } });
+    }, { rootMargin: '0px 0px -75% 0px' });
+    document.querySelectorAll('#content h2[id]').forEach((h) => io.observe(h));
+  }
+  // Copy as Markdown
+  const btn = document.getElementById('copy-md');
+  btn?.addEventListener('click', async () => {
+    const label = btn.lastChild;
+    try { const md = await (await fetch(btn.dataset.src)).text(); await navigator.clipboard.writeText(md); label.textContent = ' Copied'; }
+    catch { label.textContent = ' Copy failed'; }
+    setTimeout(() => (label.textContent = ' Copy as Markdown'), 1600);
+  });
+</script>

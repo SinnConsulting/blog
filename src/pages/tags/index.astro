@@ -1,0 +1,30 @@
+---
+import Base from '../../layouts/Base.astro';
+import RepoHead from '../../components/RepoHead.astro';
+import Profile from '../../components/Profile.astro';
+import Pinned from '../../components/Pinned.astro';
+import Sponsor from '../../components/Sponsor.astro';
+import AgentBox from '../../components/AgentBox.astro';
+import Icon from '../../components/Icon.astro';
+import { url } from '../../lib/paths';
+import { getPosts, allTags } from '../../lib/posts';
+const posts = await getPosts();
+const tags = allTags(posts);
+---
+<Base title="Topics" description="Every topic on the blog." crumbs={[{ label: 'topics' }]}>
+  <RepoHead slot="head" active="tags" />
+  <Fragment slot="left"><Profile /><Pinned /><Sponsor /></Fragment>
+  <div class="box">
+    <div class="box-header"><Icon name="tag" /> <strong>{tags.length} topics</strong></div>
+    {tags.map(([t, n]) => (
+      <div class="box-row">
+        <a class="topic" href={url(`tags/${t}/`)}>{t}</a>
+        <span class="muted" style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+          {posts.filter((p) => p.data.tags.includes(t)).map((p) => p.data.title).join(' · ')}
+        </span>
+        <span class="label">{n} {n === 1 ? 'post' : 'posts'}</span>
+      </div>
+    ))}
+  </div>
+  <Fragment slot="right"><AgentBox /></Fragment>
+</Base>

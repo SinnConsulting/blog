@@ -1,0 +1,7 @@
+<script is:inline>
+  // Turn the scraper-proof contact spans into working links.
+  document.querySelectorAll('.obf-mail').forEach((el) => {
+    const a = el.dataset.u + '@' + el.dataset.d;
+    el.href = 'mai' + 'lto:' + a; el.textContent = a;
+  });
+</script>

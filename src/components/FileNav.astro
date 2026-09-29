@@ -1,0 +1,17 @@
+---
+import Icon from './Icon.astro';
+import { url, github } from '../lib/paths';
+import { sourcePath, type Post } from '../lib/posts';
+interface Props { post: Post; active: 'preview' | 'history' }
+const { post, active } = Astro.props;
+---
+<nav class="file-nav" aria-label="File views">
+  <span class="path"><a href={url('/')}>posts</a> <span class="muted">/</span> {post.id}.md</span>
+  <div style="flex:1"></div>
+  <div class="segmented">
+    <a href={url(`${post.id}/`)} aria-current={active === 'preview' ? 'page' : undefined}><Icon name="eye" /> Preview</a>
+    <a href={url(`${post.id}.md`)}><Icon name="code" /> Raw</a>
+    <a href={url(`${post.id}/history/`)} aria-current={active === 'history' ? 'page' : undefined}><Icon name="history" /> History</a>
+  </div>
+  <a class="btn" href={github.edit(sourcePath(post))} rel="noopener"><Icon name="pencil" /> Suggest edit</a>
+</nav>

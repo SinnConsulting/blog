@@ -1,0 +1,123 @@
+---
+import Base from '../layouts/Base.astro';
+import RepoHead from '../components/RepoHead.astro';
+import Profile from '../components/Profile.astro';
+import Pinned from '../components/Pinned.astro';
+import Sponsor from '../components/Sponsor.astro';
+import ContribGraph from '../components/ContribGraph.astro';
+import AgentBox from '../components/AgentBox.astro';
+import Icon from '../components/Icon.astro';
+import { site } from '../data/site';
+import { url, absolute, github, avatarFor } from '../lib/paths';
+import { getPosts, getDrafts, allTags, formatDate, lastUpdated } from '../lib/posts';
+import { dirHistory } from '../lib/git';
+
+const posts = await getPosts();
+const drafts = await getDrafts();
+const tags = allTags(posts);
+const log = dirHistory('src/content/posts');
+const latest = log[0];
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Blog',
+  name: site.title,
+  description: site.description,
+  url: absolute('/'),
+  author: { '@type': 'Person', name: site.profile.name, url: site.profile.links[0]?.href },
+  blogPost: posts.map((p) => ({ '@type': 'BlogPosting', headline: p.data.title, url: new URL(url(`${p.id}/`), Astro.site).toString(), datePublished: p.data.date.toISOString() })),
+};
+---
+<Base jsonLd={jsonLd}>
+  <RepoHead slot="head" active="posts" />
+
+  <Fragment slot="left">
+    <Profile />
+    <Pinned />
+    <Sponsor />
+  </Fragment>
+
+  <div class="stack" style="gap:16px">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      <span class="btn"><Icon name="branch" /> {site.repo.branch}</span>
+      <div style="flex:1"></div>
+      <label class="search" style="flex:0 1 280px">
+        <span class="icon"><Icon name="search" /></span>
+        <input id="filter" type="search" placeholder="Go to file" aria-label="Filter posts" style="width:100%" />
+        <kbd class="hide-sm">t</kbd>
+      </label>
+    </div>
+
+    <div class="box files">
+      <div class="box-header commit-bar">
+        {latest ? (
+          <>
+            <img class="avatar" src={avatarFor(latest.author)} width="20" height="20" alt="" />
+            <span class="msg"><strong>{latest.author}</strong>{latest.subject}</span>
+            <a class="mono muted hide-sm" href={github.commit(latest.sha)} style="font-size:12px">{latest.short}</a>
+            <span class="muted hide-sm">· {formatDate(latest.date)}</span>
+          </>
+        ) : <span class="msg">Latest posts</span>}
+        <a class="meta-line" href={github.commits('src/content/posts')} style="color:var(--fg);font-weight:600"><Icon name="history" /> {log.length} {log.length === 1 ? 'commit' : 'commits'}</a>
+      </div>
+      {posts.map((p) => (
+        <div class="box-row" data-q={`${p.id} ${p.data.title} ${p.data.summary} ${p.data.tags.join(' ')}`.toLowerCase()}>
+          <span class="name"><span class="icon"><Icon name="file" /></span><a class="file" href={url(`${p.id}/`)} title={p.data.title}>{p.id}.md</a></span>
+          <span class="summary">{p.data.summary}</span>
+          <time datetime={lastUpdated(p).toISOString()}>{formatDate(lastUpdated(p))}</time>
+        </div>
+      ))}
+      <div class="empty" id="no-match" hidden>No posts match that search.</div>
+    </div>
+
+    <article class="box">
+      <div class="box-header"><Icon name="book" /> <strong>README</strong></div>
+      <div class="markdown" style="padding-top:24px">
+        <h1>{site.title}</h1>
+        <p>{site.description}</p>
+        <p>This blog is laid out like a repository because it <em>is</em> one. Every post is a Markdown file with a real
+          history. Open <strong>Raw</strong> to get exactly what an agent reads, <strong>History</strong> to see every edit as a
+          commit, or <strong>Suggest edit</strong> to fix something with a pull request.</p>
+        <h2>Latest</h2>
+        <ul>
+          {posts.slice(0, 5).map((p) => <li><a href={url(`${p.id}/`)}>{p.data.title}</a>: {p.data.summary}</li>)}
+        </ul>
+      </div>
+    </article>
+
+    <ContribGraph commits={log} />
+  </div>
+
+  <Fragment slot="right">
+    <section class="side">
+      <h2>About</h2>
+      <p>{site.description}</p>
+      <p class="meta-line"><Icon name="link" /> <a href={absolute('/')} style="color:var(--accent);font-weight:600">{new URL(absolute('/')).host}</a></p>
+      <div class="topics" style="margin-top:12px">
+        {tags.map(([t]) => <a class="topic" href={url(`tags/${t}/`)}>{t}</a>)}
+      </div>
+    </section>
+    <AgentBox />
+    <section class="side">
+      <h2>Status</h2>
+      <p class="meta-line"><Icon name="check" /> {posts.length} published</p>
+      <p class="meta-line"><Icon name="pencil" /> {drafts.length} {drafts.length === 1 ? 'draft' : 'drafts'} in progress</p>
+    </section>
+  </Fragment>
+</Base>
+
+<script is:inline>
+  const input = document.getElementById('filter');
+  const rows = [...document.querySelectorAll('.files .box-row')];
+  const none = document.getElementById('no-match');
+  const apply = (q) => {
+    q = q.trim().toLowerCase(); let shown = 0;
+    rows.forEach((r) => { const hit = !q || r.dataset.q.includes(q); r.hidden = !hit; shown += hit; });
+    none.hidden = shown > 0;
+  };
+  const q = new URLSearchParams(location.search).get('q');
+  if (q) { input.value = q; apply(q); }
+  input.addEventListener('input', () => apply(input.value));
+  addEventListener('keydown', (e) => {
+    if (e.key === 't' && !(e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement)) { e.preventDefault(); input.focus(); }
+  });
+</script>

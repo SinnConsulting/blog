@@ -1,0 +1,43 @@
+---
+import type { Commit } from '../lib/git';
+// GitHub-style 53-week grid of writing activity, drawn from the git log of the posts folder.
+interface Props { commits: Commit[] }
+const { commits } = Astro.props;
+const DAY = 86_400_000;
+const today = new Date(); today.setUTCHours(0, 0, 0, 0);
+const end = new Date(today.getTime() + (6 - today.getUTCDay()) * DAY); // Saturday of this week
+const start = new Date(end.getTime() - (53 * 7 - 1) * DAY);
+const counts = new Map<string, number>();
+for (const c of commits) {
+  const k = c.date.toISOString().slice(0, 10);
+  counts.set(k, (counts.get(k) ?? 0) + 1);
+}
+const level = (n: number) => (n === 0 ? 0 : n === 1 ? 1 : n <= 3 ? 2 : n <= 6 ? 3 : 4);
+const cells = [] as { x: number; y: number; l: number; title: string }[];
+const months = [] as { x: number; label: string }[];
+let lastMonth = -1;
+for (let i = 0; i < 53 * 7; i++) {
+  const d = new Date(start.getTime() + i * DAY);
+  if (d > today) break;
+  const w = Math.floor(i / 7), y = i % 7;
+  const n = counts.get(d.toISOString().slice(0, 10)) ?? 0;
+  cells.push({ x: w, y, l: level(n), title: `${n} change${n === 1 ? '' : 's'} on ${d.toISOString().slice(0, 10)}` });
+  if (y === 0 && d.getUTCMonth() !== lastMonth) {
+    lastMonth = d.getUTCMonth();
+    if (w < 51) months.push({ x: w, label: d.toLocaleString('en-US', { month: 'short', timeZone: 'UTC' }) });
+  }
+}
+const yearTotal = commits.filter((c) => c.date >= start).length;
+const S = 10, G = 3;
+---
+<section class="box">
+  <div class="box-header"><strong>{yearTotal}</strong>&nbsp;<span class="muted">changes to posts in the last year</span></div>
+  <div class="box-body" style="overflow-x:auto">
+    <svg class="graph" viewBox={`0 0 ${53 * (S + G)} ${7 * (S + G) + 14}`} role="img" aria-label={`${yearTotal} changes to posts in the last year`} style="min-width:560px">
+      {months.map((m) => <text x={m.x * (S + G)} y="9">{m.label}</text>)}
+      <g transform="translate(0 14)">
+        {cells.map((c) => <rect class={`l${c.l}`} x={c.x * (S + G)} y={c.y * (S + G)} width={S} height={S}><title>{c.title}</title></rect>)}
+      </g>
+    </svg>
+  </div>
+</section>

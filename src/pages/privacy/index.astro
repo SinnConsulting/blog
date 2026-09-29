@@ -1,0 +1,97 @@
+---
+import Base from '../../layouts/Base.astro';
+import Contact from '../../components/Contact.astro';
+import LegalScript from '../../components/LegalScript.astro';
+import { operator as o, legalNoticeUrl } from '../../data/legal';
+import { url } from '../../lib/paths';
+const githubPrivacy = 'https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement';
+const anthropicPrivacy = 'https://www.anthropic.com/legal/privacy';
+---
+<Base title="Privacy policy" description="Privacy policy for the SinnConsulting blog." crumbs={[{ label: 'privacy' }]}>
+  <Fragment slot="left">
+    <section class="side">
+      <h2>Legal</h2>
+      <ul class="stack" style="list-style:none;margin:0;padding:0">
+        <li><a href={legalNoticeUrl}>Legal notice (Impressum)</a></li>
+        <li><a href={url('privacy/')}>Privacy policy</a></li>
+      </ul>
+    </section>
+    <section class="side">
+      <h2>In short</h2>
+      <p class="muted">No cookies. No tracking. No analytics. Fonts and images are served from this site.</p>
+    </section>
+  </Fragment>
+
+  <article class="box"><div class="markdown legal">
+
+    <section lang="en">
+      <h1>Privacy <em>policy</em></h1>
+      <p class="muted">Datenschutzerklärung</p>
+
+      <h2>1. Controller</h2>
+      <p>Controller within the meaning of the GDPR:<br /><strong>{o.name}</strong><br />{o.business}<br />
+        <Contact kind="address" /><br />Email: <Contact kind="mail" /></p>
+
+      <h2>2. Hosting</h2>
+      <p>This website is hosted on GitHub Pages. The provider is GitHub Inc., 88 Colin P Kelly Jr St, San Francisco,
+        CA 94107, USA. When you visit the website, GitHub automatically collects information in server log files that your
+        browser transmits, in particular your IP address, the date and time of access, the page requested and the browser
+        used. More information: <a href={githubPrivacy}>GitHub Privacy Statement</a>.</p>
+      <p>The legal basis is Art. 6 (1) (f) GDPR; our legitimate interest is presenting the website reliably. Data is
+        transferred to the USA on the basis of the European Commission's adequacy decision under Art. 45 GDPR (EU-US Data
+        Privacy Framework), under which GitHub Inc. is certified.</p>
+
+      <h2>3. No cookies, no tracking, no third-party content</h2>
+      <p>This website sets no cookies and uses no analytics or tracking services. Fonts, images and scripts are loaded only
+        from this site; simply reading it sends no data to third parties.</p>
+      <p>If you switch to the light theme, that choice is stored in your browser's local storage (localStorage). It never
+        leaves your device and is strictly necessary for the feature you asked for (§ 25 (2) no. 2 TDDDG). You can remove it
+        at any time with the theme switch or in your browser settings.</p>
+
+      <h2>4. Links to external services</h2>
+      <p>Some buttons lead to third-party services. Data is only transmitted once you click such a link; the provider's
+        privacy policy then applies:</p>
+      <ul>
+        <li><strong>GitHub</strong> (“Suggest edit”, “View source”, “Star on GitHub”, links to commits and repositories):
+          GitHub Inc., <a href={githubPrivacy}>privacy statement</a>.</li>
+        <li><strong>Claude</strong> (“Ask Claude”): opens claude.ai by Anthropic PBC with a prepared question about the post,
+          <a href={anthropicPrivacy}>privacy policy</a>.</li>
+        <li><strong>sinn.consulting</strong> (“Legal notice”): our company website, which has its own
+          <a href="https://sinn.consulting/privacy.html">privacy policy</a>.</li>
+        <li><strong>LinkedIn</strong>, the <strong>Visual Studio Marketplace</strong> and other linked websites.</li>
+      </ul>
+
+      <h2>5. Edit suggestions via GitHub</h2>
+      <p>If you submit a pull request via “Suggest edit”, you do so from your GitHub account and under GitHub's terms. Your
+        GitHub name and your contribution are public there. If the suggestion is merged, your name, the date and the commit
+        message appear in the repository's public version history and on the post's “History” page. The legal basis is
+        Art. 6 (1) (f) GDPR (a traceable version history). On request we will remove your name from this website; the
+        version history on GitHub cannot always be changed afterwards.</p>
+
+      <h2>6. Contact by email</h2>
+      <p>If you contact us by email, we store the details you provide to handle your request and any follow-up questions.
+        We do not share them without your consent. The legal basis is Art. 6 (1) (b) GDPR (pre-contractual measures) or
+        Art. 6 (1) (f) GDPR (legitimate interest). The data is deleted once your request has been fully handled, at the
+        latest after three years, unless statutory retention obligations apply.</p>
+
+      <h2>7. Your rights</h2>
+      <p>Under the GDPR you have the right to:</p>
+      <ul>
+        <li>access your stored data (Art. 15 GDPR)</li>
+        <li>rectification of inaccurate data (Art. 16 GDPR)</li>
+        <li>erasure of your data (Art. 17 GDPR)</li>
+        <li>restriction of processing (Art. 18 GDPR)</li>
+        <li>data portability (Art. 20 GDPR)</li>
+        <li>object to processing (Art. 21 GDPR)</li>
+      </ul>
+      <p>You also have the right to lodge a complaint with a data protection supervisory authority. For Bavaria (private
+        sector) this is the Bayerisches Landesamt für Datenschutzaufsicht (BayLDA), Promenade 27, 91522 Ansbach,
+        <a href="https://www.lda.bayern.de">www.lda.bayern.de</a>.</p>
+
+      <h2>8. Encryption</h2>
+      <p>This website is served exclusively over an encrypted connection (HTTPS/TLS).</p>
+      <p class="muted">Last updated: {o.updated}</p>
+    </section>
+  </div></article>
+  <LegalScript />
+</Base>

@@ -1,0 +1,19 @@
+---
+import { authors } from '../data/site';
+import { url } from '../lib/paths';
+interface Props { ids: string[] }
+const people = Astro.props.ids.map((id) => ({ id, ...(authors[id] ?? { name: id, avatar: '', href: '#', kind: 'human' as const }) }));
+const src = (a: string) => (a.startsWith('http') ? a : url(a));
+---
+<section class="side">
+  <h2>Contributors <span class="label">{people.length}</span></h2>
+  <ul class="stack" style="list-style:none;margin:0;padding:0">
+    {people.map((p) => (
+      <li class="meta-line">
+        <img class="avatar" src={src(p.avatar)} width="24" height="24" alt="" loading="lazy" />
+        <a href={p.href} style="color:var(--fg)">{p.name}</a>
+        {p.kind === 'agent' && <span class="label agent">agent</span>}
+      </li>
+    ))}
+  </ul>
+</section>

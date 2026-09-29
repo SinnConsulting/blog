@@ -1,0 +1,52 @@
+---
+import Base from '../../layouts/Base.astro';
+import RepoHead from '../../components/RepoHead.astro';
+import Profile from '../../components/Profile.astro';
+import Pinned from '../../components/Pinned.astro';
+import Sponsor from '../../components/Sponsor.astro';
+import Icon from '../../components/Icon.astro';
+import { absolute } from '../../lib/paths';
+import { getPosts } from '../../lib/posts';
+const posts = await getPosts();
+const example = posts[0]?.id ?? 'post';
+const endpoints = [
+  { path: 'llms.txt', what: 'Index of every post with a one-line summary. Start here.' },
+  { path: 'llms-full.txt', what: 'Every post in full, one file. Good for a single context load.' },
+  { path: `${example}.md`, what: 'Any post as clean Markdown: append .md to the slug.' },
+  { path: 'posts.json', what: 'Structured metadata: title, summary, tldr, tags, dates, revision count, token estimate.' },
+  { path: 'rss.xml', what: 'RSS feed.' },
+  { path: 'sitemap-index.xml', what: 'Sitemap.' },
+];
+---
+<Base title="For agents" description="How AI agents and tools can read this blog." crumbs={[{ label: 'agents' }]}>
+  <RepoHead slot="head" active="agents" />
+  <Fragment slot="left"><Profile /><Pinned /><Sponsor /></Fragment>
+  <article class="box">
+    <div class="box-header"><Icon name="hubot" /> <strong>AGENTS.md</strong></div>
+    <div class="markdown">
+      <h1>Reading this blog as an agent</h1>
+      <p>This blog is agent-first. Every page is also published as plain text at a stable URL, and nothing
+        requires JavaScript, cookies or a login. Please use these endpoints instead of scraping the HTML.</p>
+      <table>
+        <thead><tr><th>Endpoint</th><th>What you get</th></tr></thead>
+        <tbody>{endpoints.map((e) => <tr><td><a href={absolute(e.path)}><code>{e.path}</code></a></td><td>{e.what}</td></tr>)}</tbody>
+      </table>
+      <h2>Conventions</h2>
+      <ul>
+        <li>Every HTML page links its Markdown twin with <code>&lt;link rel="alternate" type="text/markdown"&gt;</code>.</li>
+        <li>Markdown files start with YAML frontmatter: <code>title</code>, <code>summary</code>, <code>url</code>, dates, <code>authors</code>, <code>tags</code>, <code>tldr</code>.</li>
+        <li>Pages carry <code>schema.org</code> <code>BlogPosting</code> JSON-LD.</li>
+        <li>Posts are versioned in git. The <strong>History</strong> tab of each post lists every change.</li>
+        <li>Authorship is explicit: posts written with an AI list it as a contributor.</li>
+      </ul>
+      <h2>Try it</h2>
+      <pre><code>{`curl ${absolute('llms.txt')}\ncurl ${absolute(`${example}.md`)}`}</code></pre>
+    </div>
+  </article>
+  <Fragment slot="right">
+    <section class="side">
+      <h2>Why</h2>
+      <p class="muted">More and more readers arrive through an assistant. Giving it clean text means better answers, correct quotes and a link back.</p>
+    </section>
+  </Fragment>
+</Base>

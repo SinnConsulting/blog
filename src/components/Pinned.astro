@@ -1,0 +1,16 @@
+---
+import Icon from './Icon.astro';
+import { site } from '../data/site';
+---
+<section class="side">
+  <h2>Pinned repositories</h2>
+  <div class="stack" style="gap:8px">
+    {site.pinned.map((r) => (
+      <a class="pin" href={`https://github.com/${r.owner}/${r.name}`}>
+        <span class="pin-name"><Icon name="repo" /> {r.name}</span>
+        <p>{r.description}</p>
+        {r.language && <span class="lang"><i style={`background:${r.color}`}></i>{r.language}</span>}
+      </a>
+    ))}
+  </div>
+</section>

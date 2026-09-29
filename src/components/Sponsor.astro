@@ -1,0 +1,12 @@
+---
+import { site } from '../data/site';
+const s = site.sponsor;
+---
+{s && (
+  <section class="sponsor" aria-label={s.label}>
+    <div class="kicker"><span>{s.label}</span><span>Ad</span></div>
+    <strong>{s.title}</strong>
+    <p>{s.text}</p>
+    <a class="btn primary" href={s.href} rel="sponsored noopener">{s.cta}</a>
+  </section>
+)}

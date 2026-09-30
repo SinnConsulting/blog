@@ -66,6 +66,7 @@
 /* Base ------------------------------------------------------------------ */
 *, *::before, *::after { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
+[hidden] { display: none !important; }
 body { margin: 0; overflow-x: clip; background: var(--bg); color: var(--fg); font: 400 15px/1.55 var(--font); -webkit-font-smoothing: antialiased; }
 body::before { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
   background: radial-gradient(ellipse 60% 40% at 50% 0%, rgba(42,157,143,.10), transparent 60%),

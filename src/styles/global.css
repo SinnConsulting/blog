@@ -177,12 +177,12 @@ kbd { display: inline-block; padding: 0 5px; font-size: 11px; line-height: 18px;
 .topic:hover { background: var(--accent); color: #fff; text-decoration: none; }
 
 /* Avatars */
-.avatar { border-radius: 50%; display: inline-block; vertical-align: middle; background: var(--bg-subtle); box-shadow: 0 0 0 1px var(--border-muted); }
+.avatar { border-radius: 50%; display: inline-block; vertical-align: middle; object-fit: cover; object-position: 50% 15%; background: var(--bg-subtle); box-shadow: 0 0 0 1px var(--border-muted); }
 .avatar-stack { display: inline-flex; }
 .avatar-stack .avatar + .avatar { margin-left: -6px; box-shadow: 0 0 0 2px var(--bg-subtle); }
 
 /* Profile */
-.profile img { width: 100%; max-width: 256px; aspect-ratio: 1; border-radius: 50%; box-shadow: 0 0 0 1px var(--border-muted); }
+.profile img { width: 100%; max-width: 256px; aspect-ratio: 1; border-radius: 50%; object-fit: cover; object-position: 50% 15%; box-shadow: 0 0 0 1px var(--border-muted); }
 .profile .name { font-size: 24px; font-weight: 600; line-height: 1.25; margin: 12px 0 0; }
 .profile .handle { font-size: 20px; font-weight: 300; color: var(--fg-muted); margin: 0 0 12px; }
 @media (max-width: 1200px) {

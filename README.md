@@ -61,5 +61,9 @@ address is never plain text in the HTML. Update `legal.ts` and the privacy page 
 
 ## Publishing
 
-Pages must use **Settings → Pages → Source: GitHub Actions**. `public/CNAME` holds `blog.sinn.consulting`.
+Pages must use **Settings → Pages → Source: GitHub Actions**, with **Custom domain** set to
+`blog.sinn.consulting` in the same screen. Actions deployments ignore CNAME files, so `public/CNAME`
+alone does not claim the domain; the setting does. If the source is left on "Deploy from a branch",
+GitHub tries to build the repository with Jekyll, fails, and the domain shows GitHub's
+"There isn't a GitHub Pages site here" 404. DNS: `blog` is a CNAME to `sinnconsulting.github.io`.
 Each push to `master` builds (with full git history, for the History tabs) and deploys.
